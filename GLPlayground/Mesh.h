@@ -2,7 +2,7 @@
 
 #include "glmath.h"
 
-#include "Texture.h"
+#include <vector>
 
 struct VertexAttribute
 {
@@ -20,7 +20,10 @@ class Mesh
 
 	unsigned int c_vao;
 
-	unsigned int c_vertexCount = 3;
+	unsigned int c_vertexCount;
+
+
+	static std::vector<Mesh*> s_uploadedMeshes;
 
 
 public:
@@ -35,22 +38,10 @@ public:
 	};
 	*/
 
-	glm::vec3 vertices[4] = {
-		glm::vec3(0.5, 0.5, 0.0),
-		glm::vec3(0.5, -0.5, 0.0),
-		glm::vec3(-0.5, -0.5, 0.0),
 
-	};
+	std::vector<VertexAttribute> attributes;
 
-	VertexAttribute attributes[3] = {
-		VertexAttribute(glm::vec3(0.5, -0.5, 0.0), glm::vec3(1.0, 0.0, 0), vec2right),
-		VertexAttribute(glm::vec3(-0.5, -0.5, 0.0), glm::vec3(0, 1, 0), vec2zero),
-		VertexAttribute(glm::vec3(0.0, 0.5, 0.0), glm::vec3(0, 0.0, 1), vec2up)
-	};
-
-	unsigned int indices[6] = {  // note that we start from 0!
-	0, 2, 1   // first triangle
-	};
+	std::vector<unsigned int> indices;
 
 	Mesh();
 
@@ -61,6 +52,12 @@ public:
 	void uploadToGPU();
 
 	void draw();
+
+
+	static void deleteAllVAOs();
+
+	static Mesh* gen_quad(float size = 1.0f);
+
 
 };
 

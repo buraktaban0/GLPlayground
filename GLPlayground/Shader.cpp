@@ -22,13 +22,6 @@ namespace fs = std::filesystem;
 std::map<std::string, Shader> g_shaders;
 
 
-bool replace(std::string& str, const std::string& from, const std::string& to) {
-	size_t start_pos = str.find(from);
-	if (start_pos == std::string::npos)
-		return false;
-	str.replace(start_pos, from.length(), to);
-	return true;
-}
 
 void Shader::compileAll()
 {
@@ -65,7 +58,7 @@ void Shader::compileAll()
 
 
 
-Shader Shader::get(std::string name)
+Shader* Shader::get(std::string name)
 {
 
 	if (g_shaders.count(name) < 1)
@@ -73,7 +66,7 @@ Shader Shader::get(std::string name)
 		throw std::invalid_argument("No compiled program named " + name);
 	}
 
-	return g_shaders[name];
+	return &g_shaders[name];
 }
 
 
@@ -104,8 +97,8 @@ void Shader::compile()
 	auto vertexPath = prefix + c_name + vertexExt;
 	auto fragPath = prefix + c_name + fragExt;
 
-	std::string vertexSource = read_all_file(vertexPath);
-	std::string fragSource = read_all_file(fragPath);
+	std::string vertexSource = read_file(vertexPath);
+	std::string fragSource = read_file(fragPath);
 	const char* c_vert = vertexSource.c_str();
 	const char* c_frag = fragSource.c_str();
 
@@ -153,10 +146,21 @@ void Shader::compile()
 	glDeleteShader(fragShader);
 
 	c_programID = shaderProgram;
+
+
+	c_modelLoc = glGetUniformLocation(c_programID, "model");
+
+}
+
+void Shader::setModelMat(glm::mat4 model)
+{
+	glUniformMatrix4fv(c_modelLoc, 1, GL_FALSE, &model[0][0]);
 }
 
 
 void Shader::use()
 {
+	//std::cout << "Shader: " << c_programID << std::endl;
+
 	glUseProgram(c_programID);
 }

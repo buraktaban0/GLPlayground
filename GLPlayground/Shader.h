@@ -3,6 +3,8 @@
 #include <map>
 #include <string>
 
+#include <glm/glm.hpp>
+
 class Shader
 {
 
@@ -11,8 +13,10 @@ class Shader
 
 	unsigned int c_programID;
 
-	std::map<std::string, unsigned int> c_uniformLocations;
+	unsigned int c_modelLoc, c_viewLoc, c_projLoc;
 
+
+	std::map<std::string, unsigned int> c_uniformLocations;
 
 
 public:
@@ -20,7 +24,7 @@ public:
 
 	static void compileAll();
 
-	static Shader get(std::string);
+	static Shader* get(std::string);
 
 
 
@@ -31,6 +35,8 @@ public:
 	unsigned int programID();
 
 	void compile();
+
+	void setModelMat(glm::mat4 model);
 
 	void use();
 

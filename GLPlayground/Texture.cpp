@@ -8,6 +8,8 @@
 #include <stb_image.h>
 #include <iostream>
 
+#include "io.h"
+
 std::map<std::string, Texture*> Texture::s_loadedTextures;
 
 Texture::Texture()
@@ -29,8 +31,9 @@ int Texture::channelCount() { return c_channelCount; }
 void Texture::use()
 {
 
+	//std::cout << "Texture: " << c_id << std::endl;
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, this->c_id);
+	glBindTexture(GL_TEXTURE_2D, c_id);
 
 }
 
@@ -47,11 +50,14 @@ Texture* Texture::get(std::string path)
 }
 
 
-Texture* Texture::load(std::string path)
+void Texture::load(std::string path)
 {
+	std::cout << "Loading texture: |" << path << "|" << std::endl;
 
 	int w, h, c;
 	unsigned char* data = stbi_load(path.c_str(), &w, &h, &c, 0);
+
+	//std::cout << w << "  " << h << "  " << c << "  " << std::endl;
 
 	if (data)
 	{
@@ -68,15 +74,20 @@ Texture* Texture::load(std::string path)
 
 		stbi_image_free(data);
 
-		return tex;
-
-
+	}
+	else
+	{
+		std::cout << "DATA WAS NULL!" << std::endl;
+		throw "Could not load texture: " + path;
 	}
 
-	std::cout << "DATA WAS NULL!" << std::endl;
+}
 
-	return NULL;
 
+
+void Texture::loadAll()
+{
+	for_all_files("res", load);
 }
 
 
@@ -103,7 +114,9 @@ void Texture::uploadToGPU()
 		std::cout << "DATA WAS NULL 2 " << std::endl;
 	}
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->c_width, this->c_height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->c_data);
+	auto format = this->c_channelCount == 3 ? GL_RGB : GL_RGBA;
+
+	glTexImage2D(GL_TEXTURE_2D, 0, format, this->c_width, this->c_height, 0, format, GL_UNSIGNED_BYTE, this->c_data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, 0);

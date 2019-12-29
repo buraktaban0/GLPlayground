@@ -25,7 +25,9 @@ public:
 
 	static Texture* get(std::string);
 
-	static Texture* load(std::string path);
+	static void load(std::string path);
+
+	static void loadAll();
 
 
 	std::string path();
