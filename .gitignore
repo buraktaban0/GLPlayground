@@ -11,6 +11,8 @@
 *.gch
 *.pch
 
+*.ipch
+
 # Compiled Dynamic libraries
 *.so
 *.dylib
@@ -30,3 +32,8 @@
 *.exe
 *.out
 *.app
+
+*.log
+*.tlog
+
+*.db
